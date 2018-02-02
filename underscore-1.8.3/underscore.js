@@ -136,8 +136,11 @@
   var cb = function (value, context, argCount) {
     if (_.iteratee !== builtinIteratee) return _.iteratee(value, context);
     if (value == null) return _.identity;
+    // 函数
     if (_.isFunction(value)) return optimizeCb(value, context, argCount);
+    // 对象,但不是数组
     if (_.isObject(value) && !_.isArray(value)) return _.matcher(value);
+    // 其他
     return _.property(value);
   };
 
@@ -1488,18 +1491,24 @@
   // Is a given array, string, or object empty?
   // An "empty" object has no enumerable own-properties.
   _.isEmpty = function (obj) {
+    // 如果是null
     if (obj == null) return true;
+    // 如果是类数组,数组,string,形参
     if (isArrayLike(obj) && (_.isArray(obj) || _.isString(obj) || _.isArguments(obj))) return obj.length === 0;
+    // 其他查看下`key`的长度
     return _.keys(obj).length === 0;
   };
 
   // Is a given value a DOM element?
   _.isElement = function (obj) {
+    // nodeType为1
     return !!(obj && obj.nodeType === 1);
   };
 
   // Is a given value an array?
   // Delegates to ECMA5's native Array.isArray
+  // native isArray
+  // Object.toString.call(obj) === '[object Array]'
   _.isArray = nativeIsArray || function (obj) {
     return toString.call(obj) === '[object Array]';
   };
@@ -1535,6 +1544,10 @@
   }
 
   // Is a given object a finite number?
+
+  // 不是symbol
+  // 是finite
+  // 不是nan
   _.isFinite = function (obj) {
     return !_.isSymbol(obj) && isFinite(obj) && !isNaN(parseFloat(obj));
   };
@@ -1800,7 +1813,7 @@
   // Add a "chain" function. Start chaining a wrapped Underscore object.
   _.chain = function (obj) {
     var instance = _(obj);
-    instance._chain = true;
+    instance._chain = true; // 很多库都是_属性来表示是否被怎么怎么样
     return instance;
   };
 
